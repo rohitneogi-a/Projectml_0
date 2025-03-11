@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Glassmorphism effect */
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.dark .glassmorphism {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600;
+}
+
+.dark .gradient-text {
+  @apply from-blue-400 to-purple-400;
+}
+
+/* Animated background */
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-bg {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+/* Light mode specific styles */
+.light {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 240, 240, 255;
+  --background-end-rgb: 255, 255, 255;
+}
+
+/* Adjust glassmorphism effect for light mode */
+.light .glassmorphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+}
+
+/* Adjust gradient text for light mode */
+.light .gradient-text {
+  @apply from-blue-700 to-purple-700;
+}
+
+/* Adjust animated background for light mode */
+.light .animated-bg {
+  background: linear-gradient(-45deg, #f6d365, #fda085, #86a8e7, #5ffbf1);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
