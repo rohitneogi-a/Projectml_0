@@ -36,13 +36,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'predictions',  # Your app
-    'corsheaders',  # CORS headers app
+    'predictions',  
+    'corsheaders',  
 ]
 
 # Middleware configuration
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Must be the first middleware
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -58,8 +58,9 @@ CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins (for development purposes)
 # Alternatively, restrict origins if needed:
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',  # React app running locally
-    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3000',  # Localhost with IPv4 address
 ]
+
 
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -71,13 +72,15 @@ CORS_ALLOW_METHODS = [
 ]
 
 CORS_ALLOW_HEADERS = [
-    'content-type',
-    'authorization',
-    'x-csrftoken',
     'accept',
     'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
     'origin',
     'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # If you’re using cookies or HTTP auth

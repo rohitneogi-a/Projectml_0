@@ -4,5 +4,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/predict/', include('predictions.urls')),
+    # Include all predictions app URLs under the /api/ prefix
+    path('api/', include('predictions.urls')),
 ]
