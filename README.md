@@ -81,9 +81,7 @@ Once the setup is complete, you can access the frontend application locally. The
 
 Feel free to fork the repository, create a branch, and submit pull requests for any enhancements, bug fixes, or improvements you may have.
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 
 
