@@ -13,7 +13,7 @@ export default function Header() {
 
   const toggleChatbot = () => {
     setIsChatbotOpen(!isChatbotOpen);
-    if (isChatbotOpen) setNewMessage(false); // Reset the newMessage state when closing
+    if (isChatbotOpen) setNewMessage(false); 
   };
 
   const sendMessage = async () => {
