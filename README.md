@@ -2,8 +2,7 @@
 # ProjectML_0
 
 ## Description
-
-ProjectML_0 is a machine learning-based project that consists of both a backend and a frontend. This project helps in deploying and managing machine learning models with a user-friendly interface.
+**MarketMind: Stock Price Prediction Using Machine Learning** explores the use of advanced machine learning models like LSTM, SVM, GANs, and hybrid approaches (e.g., CNN-LSTM-XGBoost) to improve stock price forecasting. By leveraging diverse financial data—historical stock prices, technical indicators, macroeconomic factors, and sentiment analysis—this study aims to enhance prediction accuracy. It demonstrates that hybrid deep learning models outperform traditional methods in capturing market trends and dependencies. Despite challenges like data quality and market unpredictability, the research highlights the potential of ML for algorithmic trading, risk assessment, and portfolio optimization.
 
 ## Project Structure
 
@@ -47,7 +46,7 @@ cd Projectml_0
 
 2. Install the required packages and dependencies:
    ```bash
-   marketmind
+   cd marketmind
    ```
 
 3. Start the frontend development server:
@@ -69,5 +68,3 @@ Feel free to fork the repository, create a branch, and submit pull requests for 
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 ```
-
-This `README.md` provides clear instructions for anyone to clone and set up the project, including both backend and frontend steps, and usage details!
