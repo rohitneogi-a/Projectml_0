@@ -8,6 +8,7 @@ export default function Header() {
   const [userMessage, setUserMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([
     { message: 'Hello! How can I assist you today?', sender: 'bot' },
+    { message: ' Please ask about predict, news, business, models, or list stocks related query !', sender: 'bot' },
   ]);
   const [newMessage, setNewMessage] = useState(false);
 
@@ -91,7 +92,7 @@ export default function Header() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
-          className="fixed bottom-8 right-8 z-50 w-[420px] h-[520px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg rounded-2xl shadow-xl flex flex-col overflow-hidden border border-gray-200"
+          className="fixed bottom-0 right-0 z-50 w-[420px] h-[520px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden "
         >
           {/* Chatbot Header */}
           <div className="flex justify-between items-center p-4 bg-gradient-to-b from-gray-900 to-gray-800 text-white rounded-t-2xl">
@@ -101,7 +102,6 @@ export default function Header() {
               {newMessage && (
                 <motion.span
                   className="w-2.5 h-2.5 bg-[#90EE90] rounded-full animate-pulse"
-                  
                 />
               )}
             </div>
@@ -111,14 +111,14 @@ export default function Header() {
           </div>
 
           {/* Chat History */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-100 dark:bg-gray-800">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 dark:bg-gray-800">
             {chatHistory.map((chat, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, delay: index * 0.1 }}
-                className={`p-3 max-w-xs rounded-lg shadow-md ${chat.sender === 'bot' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 self-start' : 'bg-blue-600 text-white self-end'}`}
+                className={`p-3 max-w-xs rounded-lg shadow-md ${chat.sender === 'bot' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 self-start rounded-xl' : 'bg-blue-600 rounded-xl text-white self-end'}`}
               >
                 {chat.message}
               </motion.div>
@@ -132,11 +132,11 @@ export default function Header() {
               value={userMessage}
               onChange={(e) => setUserMessage(e.target.value)}
               placeholder="Type a message..."
-              className="flex-1 px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="flex-1 px-3 py-2 border rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             <button
               onClick={sendMessage}
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg shadow-md hover:scale-105 transition-transform"
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl shadow-md hover:scale-105 transition-transform "
             >
               ➤
             </button>
