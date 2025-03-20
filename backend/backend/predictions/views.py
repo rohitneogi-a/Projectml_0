@@ -7,7 +7,10 @@ from .predictor import predict
 import numpy as np
 import re
 import google.generativeai as genai
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 # Stock mapping
 STOCK_MAPPING = {
   "3M India": "3MINDIA",
@@ -212,7 +215,7 @@ def get_stock_symbol(query):
 # Configure Gemini API
 def configure_gemini():
     # You'll need to set your API key here
-    GEMINI_API_KEY = "AIzaSyBscRuvJs-XAhaQTmwxBILi8DAz31QOhUQ"  
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY') 
     genai.configure(api_key=GEMINI_API_KEY)
 
 # Initialize Gemini
