@@ -15,7 +15,7 @@ export default function Home() {
     if (showWelcome) {
       const timer = setTimeout(() => {
         setShowWelcome(false)
-      }, 4000) // Show welcome page for 4 seconds
+      }, 4000) 
       
       return () => clearTimeout(timer)
     }
