@@ -118,7 +118,7 @@ export default function Header() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, delay: index * 0.1 }}
-                className={`p-3 max-w-xs rounded-lg shadow-md ${chat.sender === 'bot' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 self-start rounded-xl' : 'bg-blue-600 rounded-xl text-white self-end'}`}
+                className={`p-2 max-w-xs rounded-lg shadow-md ${chat.sender === 'bot' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 self-start rounded-xl' : 'bg-blue-600 rounded-xl text-white self-end w-1/2'}`}
               >
                 {chat.message}
               </motion.div>
