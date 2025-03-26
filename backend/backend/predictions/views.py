@@ -230,17 +230,35 @@ def list_available_models():
         return f"Error listing models: {str(e)}"
 
 # Function to fetch stock price prediction
+# Function to fetch stock price prediction
 def predict_stock_price(stock_symbol):
     try:
         # Get the appropriate stock symbol
         symbol = get_stock_symbol(stock_symbol)
         
-        stock = yf.Ticker(symbol)
-        data = stock.history(period="5d")
+        # Remove .NS if present and add it separately if needed
+        symbol = symbol.replace('.NS', '')
         
-        if data.empty:
-            return f"No data found for {stock_symbol}. Please check the symbol."
-            
+        # Try multiple suffixes for Indian stocks
+        suffixes = ['', '.NS', '.BO', '.BSE']
+        data = None
+        
+        for suffix in suffixes:
+            try:
+                stock = yf.Ticker(f"{symbol}{suffix}")
+                data = stock.history(period="1mo")
+                if not data.empty:
+                    break
+            except Exception as e:
+                print(f"Failed to fetch data with suffix {suffix}: {e}")
+        
+        if data is None or data.empty:
+            return f"No data found for {stock_symbol}. Please verify the stock symbol."
+
+        # Ensure 'Close' column exists
+        if 'Close' not in data.columns:
+            return f"Unable to retrieve closing price data for {stock_symbol}"
+
         data = data[['Close']]
         data['Next Close'] = data['Close'].shift(-1)
         data = data.dropna()
@@ -254,9 +272,18 @@ def predict_stock_price(stock_symbol):
         model = LinearRegression()
         model.fit(X, y)
 
-        predicted_price = model.predict([[data['Close'].iloc[-1]]])
-        return f"Predicted price for {stock_symbol} ({symbol}) tomorrow: ${predicted_price[0]:.2f}"
+        # Get the last closing price
+        last_close = data['Close'].iloc[-1]
+        
+        # Predict next day's close
+        predicted_price = model.predict([[last_close]])
+
+        # Format response in Indian Rupees
+        return f"Current price of {stock_symbol}: ₹{last_close:.2f}\nPredicted price tomorrow: ₹{predicted_price[0]:.2f}"
+    
     except Exception as e:
+        # More detailed error logging
+        print(f"Full error details for {stock_symbol}: {str(e)}")
         return f"Error predicting price for {stock_symbol}: {str(e)}"
 
 # Function to fetch news related to stock using Gemini
@@ -361,6 +388,8 @@ def get_business_insights(stock_symbol):
             
     except Exception as e:
         return f"Error fetching business insights: {str(e)}"
+    
+    
 
 
 
@@ -382,63 +411,67 @@ def list_stocks():
 def chatbot(request):
     if request.method == "POST":
         try:
-            user_message = json.loads(request.body).get("message", "")
+            # More robust JSON parsing
+            try:
+                request_data = request.body.decode('utf-8')
+                user_message = json.loads(request_data).get("message", "")
+            except json.JSONDecodeError:
+                return JsonResponse({
+                    "response": "Invalid JSON in request",
+                    "error": "JSONDecodeError"
+                }, status=400)
+
+            # Logging for debugging
+            print(f"Received message: {user_message}")
+
             response = ""
 
+            # Price Prediction Logic
             if "predict" in user_message.lower():
-                # Extract stock symbol from message
                 stock_symbol = user_message.split("predict")[1].strip()
                 if not stock_symbol:
                     response = "Please specify a stock symbol or company name. For example: 'predict RELIANCE'"
                 else:
                     response = predict_stock_price(stock_symbol)
+            
+            # News Fetching Logic
             elif "news" in user_message.lower():
-                # Extract stock symbol from message
                 stock_symbol = user_message.split("news")[1].strip()
                 if not stock_symbol:
                     response = "Please specify a stock symbol or company name. For example: 'news RELIANCE'"
                 else:
-                    news_data = fetch_news(stock_symbol)
-                    
-                    # Format news data into a readable response
-                    if news_data:
-                        news_text = f"Top news for {stock_symbol}:\n"
-                        for i, item in enumerate(news_data, 1):
-                            news_text += f"{i}. {item['title']} - Sentiment: {item['sentiment']}\n"
-                        response = news_text
-                    else:
-                        response = f"No news found for {stock_symbol}"
-            elif "models" in user_message.lower():
-                # List available Gemini models
-                response = f"Available models: {list_available_models()}"
-            elif "list stocks" in user_message.lower():
-                # List all available stocks
-                stocks = list_stocks()
-                response = "Available stocks:\n" + ", ".join(stocks[:50])  # Changed to join with commas
-                response += "\n\n(Showing first 50 stocks. There are " + str(len(stocks)) + " stocks in total.)"
-            elif "business" in user_message.lower() or "info" in user_message.lower():
-                # Extract stock symbol from message
-                query_parts = user_message.split()
-                stock_symbol = query_parts[-1] if len(query_parts) > 1 else ""
-                
-                if not stock_symbol or stock_symbol.lower() in ["business", "info"]:
-                    response = "Please specify a stock symbol or company name. For example: 'business RELIANCE'"
+                    news_items = fetch_news(stock_symbol)
+                    response = "\n".join([f"{item['title']} (Sentiment: {item['sentiment']})" for item in news_items])
+            
+            # Business Insights Logic
+            elif "insights" in user_message.lower():
+                stock_symbol = user_message.split("insights")[1].strip()
+                if not stock_symbol:
+                    response = "Please specify a stock symbol or company name. For example: 'insights RELIANCE'"
                 else:
                     response = get_business_insights(stock_symbol)
             
+            # Fallback response
             if not response:
-                response = "Sorry, I didn't understand your request. Please ask about 'predict', 'news', 'business', 'models', or 'list stocks'."
-            
-            # Return JSON response with CORS headers
-            response_obj = JsonResponse({"response": response})
-            response_obj["Access-Control-Allow-Origin"] = "*"  # Allow all origins
-            return response_obj
+                response = "Sorry, I couldn't process your request. Please try again."
+
+            return JsonResponse({"response": response})
 
         except Exception as e:
-            return JsonResponse({"response": f"Error: {str(e)}"}, status=500)
-        
-    return JsonResponse({"response": "Invalid request method. Only POST is allowed."}, status=405)
+            # Comprehensive error logging
+            print(f"Unexpected error in chatbot view: {e}")
+            print(f"Error type: {type(e)}")
+            import traceback
+            traceback.print_exc()
 
+            return JsonResponse({
+                "response": "Server encountered an unexpected error",
+                "error": str(e)
+            }, status=500)
+
+    return JsonResponse({
+        "response": "Invalid request method. Only POST is allowed."
+    }, status=405)
 
 # Stock prediction view
 def stock_prediction_view(request):

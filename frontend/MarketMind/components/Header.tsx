@@ -1,41 +1,60 @@
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { MessageCircleCode } from 'lucide-react';
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { MessageCircleCode } from "lucide-react";
 
 export default function Header() {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
-  const [userMessage, setUserMessage] = useState('');
+  const [userMessage, setUserMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([
-    { message: 'Hello! How can I assist you today?', sender: 'bot' },
-    { message: ' Please ask about predict, news, business, models, or list stocks related query !', sender: 'bot' },
+    { message: "Hello! How can I assist you today?", sender: "bot" },
+    {
+      message: "Please ask about predict, insights, or news related queries!",
+      sender: "bot",
+    },
   ]);
   const [newMessage, setNewMessage] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Loading state to track if the AI is thinking
 
   const toggleChatbot = () => {
     setIsChatbotOpen(!isChatbotOpen);
-    if (isChatbotOpen) setNewMessage(false); 
+    if (isChatbotOpen) setNewMessage(false);
   };
 
   const sendMessage = async () => {
     if (!userMessage.trim()) return; // Don't send empty messages
-    setChatHistory((prev) => [...prev, { message: userMessage, sender: 'user' }]);
-    setUserMessage('');
+
+    // Add user message to chat history
+    setChatHistory((prev) => [
+      ...prev,
+      { message: userMessage, sender: "user" },
+    ]);
+    setUserMessage("");
+    setIsLoading(true); // Set loading to true when waiting for a response
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/chatbot/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("http://127.0.0.1:8000/api/chatbot/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage }),
       });
 
-      if (!response.ok) throw new Error('Server error');
+      if (!response.ok) throw new Error("Server error");
       const data = await response.json();
 
-      setChatHistory((prev) => [...prev, { message: data.response, sender: 'bot' }]);
+      // Add bot's response to the chat history
+      setChatHistory((prev) => [
+        ...prev,
+        { message: data.response, sender: "bot" },
+      ]);
       setNewMessage(true); // Set new message received
     } catch {
-      setChatHistory((prev) => [...prev, { message: 'Error: No response from server.', sender: 'bot' }]);
+      setChatHistory((prev) => [
+        ...prev,
+        { message: "Error: No response from server.", sender: "bot" },
+      ]);
+    } finally {
+      setIsLoading(false); // Set loading to false once the response is received
     }
   };
 
@@ -53,8 +72,12 @@ export default function Header() {
               MarketMind
             </Link>
             <div className="flex items-center space-x-6">
-              {['Home', 'About'].map((item) => (
-                <Link key={item} href={item === 'Home' ? '/' : `/${item.toLowerCase()}`} className="relative group">
+              {["Home", "About"].map((item) => (
+                <Link
+                  key={item}
+                  href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+                  className="relative group"
+                >
                   <motion.span
                     className="text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-200"
                     whileHover={{ scale: 1.1 }}
@@ -100,12 +123,13 @@ export default function Header() {
               <h2 className="text-lg font-semibold">Chatbot</h2>
               {/* Blinking Green Light beside Chatbot Text */}
               {newMessage && (
-                <motion.span
-                  className="w-2.5 h-2.5 bg-[#90EE90] rounded-full animate-pulse"
-                />
+                <motion.span className="w-2.5 h-2.5 bg-[#90EE90] rounded-full animate-pulse" />
               )}
             </div>
-            <button onClick={toggleChatbot} className="text-xl hover:text-gray-300 transition-colors">
+            <button
+              onClick={toggleChatbot}
+              className="text-xl hover:text-gray-300 transition-colors"
+            >
               ✖
             </button>
           </div>
@@ -118,11 +142,23 @@ export default function Header() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, delay: index * 0.1 }}
-                className={`p-2 max-w-xs rounded-lg shadow-md ${chat.sender === 'bot' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 self-start rounded-xl' : 'bg-blue-600 rounded-xl text-white self-end w-1/2'}`}
+                className={`p-2 max-w-xs rounded-lg shadow-md ${
+                  chat.sender === "bot"
+                    ? "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 self-start rounded-xl"
+                    : "bg-blue-600 rounded-xl text-white self-end w-1/2"
+                }`}
               >
                 {chat.message}
               </motion.div>
             ))}
+
+            {isLoading && (
+              <div className="p-2 max-w-xs shadow-md bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 self-start rounded-xl flex items-center space-x-2">
+                <div className="w-3 h-3 border-4 border-t-4 border-gray-400 dark:border-white border-solid rounded-full animate-pulse"></div>{" "}
+                {/* <span className="text-gray-500">   ...</span> */}
+                {/* Small Loader */}
+              </div>
+            )}
           </div>
 
           {/* Input Box & Send Button */}
